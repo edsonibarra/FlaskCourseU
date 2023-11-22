@@ -43,20 +43,16 @@ def create_item_in_store():
     new_store_name = request_data.get("name", None)
     new_items = request_data.get("items", None)
     
-    if new_store_name is None or new_items is None:
-        return {"message": "Invalid parameters"}, 400
+    if new_store_name is None:
+        return {"message": "Invalid parameters [name]"}, 400
+    if new_items is None:
+        return {"message": "Invalid parameters [items]"}, 400
     
     # Look up store name
-    store_found = False
     for store in stores:
         if store["name"] == new_store_name:
-            store_found = True
             store_items = store["items"]
             for item in new_items:
-                print("Item:",item)
                 store_items.append(item)
-
-    if store_found:
-        return {"message": "Item(s) created."}, 201
-    else:
-        return {"message": f"Store with name {new_store_name} was not found"}, 404
+            return {"message": "Item(s) created"}, 201
+    return {"message": f"Store {new_store_name} was not found"}, 404      
