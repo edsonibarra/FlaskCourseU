@@ -1,3 +1,4 @@
+import uuid
 from flask import Flask, request
 from db import items, stores
 
@@ -12,19 +13,21 @@ app = Flask(__name__)
 
 @app.get("/store")
 def get_stores():
-    return {"stores": stores}
+    return {"stores": list(stores.values())}
 
 @app.post("/store")
 def create_store():
     """
     Endpoint to create a new store without items.
     """
-    request_data = request.get_json()
+    store_data = request.get_json()
+    store_id = uuid.uuid4().hex
     new_store = {
-        "name": request_data["name"],
-        "items": []
+        "name": store_data["name"],
+        "items": [],
+        "id": store_id,
     }
-    stores.append(new_store)
+    stores[store_id] = new_store
     return new_store, 201
 
 @app.post("/store/<string:store_name>/item")
