@@ -23,9 +23,8 @@ def create_store():
     store_data = request.get_json()
     store_id = uuid.uuid4().hex
     new_store = {
-        "name": store_data["name"],
-        "items": [],
         "id": store_id,
+        **store_data,
     }
     stores[store_id] = new_store
     return new_store, 201
