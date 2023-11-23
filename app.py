@@ -1,4 +1,6 @@
 from flask import Flask, request
+from db import items, stores
+
 
 """
 To run the app:
