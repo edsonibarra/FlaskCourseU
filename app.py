@@ -55,3 +55,10 @@ def get_store(store_id):
         return stores[store_id], 200
     except KeyError:
         return {"message": f"store with id {store_id} not found"}, 404
+    
+@app.get("/item/<string:item_id>")
+def get_item(item_id):
+    try:
+        return items[item_id], 200
+    except KeyError:
+        return {"message": f"Item with id {item_id} not found"}
