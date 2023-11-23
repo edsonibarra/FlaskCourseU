@@ -48,3 +48,8 @@ def create_item(store_name):
             store["items"].append(new_item)
             return new_item, 201
     return {"message": f"Store {store_name} was not found"}, 404
+
+
+@app.get("/store/<string:store_name>")
+def get_store(store_name):
+    pass
