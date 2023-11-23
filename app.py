@@ -38,4 +38,13 @@ def create_store():
 
 @app.post("/store/<string:store_name>/item")
 def create_item(store_name):
-    pass  
+    request_data = request.get_json()
+    for store in stores:
+        if store["name"] == store_name:
+            new_item = {
+                "name": request_data["name"],
+                "amount": request_data["amount"]
+            }
+            store["items"].append(new_item)
+            return new_item, 201
+    return {"message": f"Store {store_name} was not found"}, 404
