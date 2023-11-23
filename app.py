@@ -40,12 +40,12 @@ def create_item(store_name):
             return new_item, 201
     return {"message": f"Store {store_name} was not found"}, 404
 
-@app.get("/store/<string:store_name>")
-def get_store(store_name):
+@app.get("/store/<string:store_id>")
+def get_store(store_id):
     """
     Pull specific store and its items.
     """
-    for store in stores:
-        if store["name"] == store_name:
-            return {"store": store}, 200
-    return {"message": f"Store not found"}, 404
+    try:
+        return stores[store_id], 200
+    except KeyError:
+        return {"message": f"store with id {store_id} not found"}, 404
