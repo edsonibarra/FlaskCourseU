@@ -29,18 +29,18 @@ def create_store():
     stores[store_id] = new_store
     return new_store, 201
 
-@app.post("/store/<string:store_name>/item")
+@app.post("/item")
 def create_item(store_name):
-    request_data = request.get_json()
-    for store in stores:
-        if store["name"] == store_name:
-            new_item = {
-                "name": request_data["name"],
-                "amount": request_data["amount"]
-            }
-            store["items"].append(new_item)
-            return new_item, 201
-    return {"message": f"Store {store_name} was not found"}, 404
+    item_data = request.get_json()
+    if item_data["store_id"] not in stores.keys():
+        return {"message": f"Store with id {item_data['store_id']} was not found"}, 404
+    item_id = uuid.uuid4().hex
+    item = {
+        **item_data,
+        "id": item_id,
+    }
+    items[item_id] = item
+    return item, 201
 
 @app.get("/store/<string:store_id>")
 def get_store(store_id):
