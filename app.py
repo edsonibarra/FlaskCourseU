@@ -30,7 +30,7 @@ def create_store():
     return new_store, 201
 
 @app.post("/item")
-def create_item(store_name):
+def create_item():
     item_data = request.get_json()
     if item_data["store_id"] not in stores.keys():
         return {"message": f"Store with id {item_data['store_id']} was not found"}, 404
