@@ -20,7 +20,7 @@ stores = [
 ]
 
 @app.get("/store")
-def get_store():
+def get_stores():
     return {"stores": stores}
 
 @app.post("/store")
@@ -36,23 +36,25 @@ def create_store():
     stores.append(new_store)
     return new_store, 201
 
-@app.post("/item")
-def create_item_in_store():
+@app.post("/store/<string:store_name>/item")
+def create_item(store_name):
     request_data = request.get_json()
-    # validate name and items exists in the payload
-    new_store_name = request_data.get("name", None)
-    new_items = request_data.get("items", None)
-    
-    if new_store_name is None:
-        return {"message": "Invalid parameters [name]"}, 400
-    if new_items is None:
-        return {"message": "Invalid parameters [items]"}, 400
-    
-    # Look up store name
     for store in stores:
-        if store["name"] == new_store_name:
-            store_items = store["items"]
-            for item in new_items:
-                store_items.append(item)
-            return {"message": "Item(s) created"}, 201
-    return {"message": f"Store {new_store_name} was not found"}, 404      
+        if store["name"] == store_name:
+            new_item = {
+                "name": request_data["name"],
+                "amount": request_data["amount"]
+            }
+            store["items"].append(new_item)
+            return new_item, 201
+    return {"message": f"Store {store_name} was not found"}, 404
+
+@app.get("/store/<string:store_name>")
+def get_store(store_name):
+    """
+    Pull specific store and its items.
+    """
+    for store in stores:
+        if store["name"] == store_name:
+            return {"store": store}, 200
+    return {"message": f"Store not found"}, 404
