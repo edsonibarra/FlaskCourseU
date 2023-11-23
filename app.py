@@ -36,4 +36,6 @@ def create_store():
     stores.append(new_store)
     return new_store, 201
 
-  
+@app.post("/store/<string:store_name>/item")
+def create_item(store_name):
+    pass  
