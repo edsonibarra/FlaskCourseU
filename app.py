@@ -9,17 +9,6 @@ To run the app:
 
 app = Flask(__name__)
 
-stores = [
-    {
-        "name": "My Store",
-        "items": [
-            {
-                "name": "Chair",
-                "price": 100
-            }
-        ]
-    }
-]
 
 @app.get("/store")
 def get_stores():
