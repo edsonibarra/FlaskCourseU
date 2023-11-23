@@ -20,7 +20,7 @@ stores = [
 ]
 
 @app.get("/store")
-def get_store():
+def get_stores():
     return {"stores": stores}
 
 @app.post("/store")
