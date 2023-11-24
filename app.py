@@ -1,4 +1,9 @@
+import uuid
 from flask import Flask, request
+from db import items, stores
+from flask_smorest import abort
+from custom_message import NOT_FOUND_MSG
+
 
 """
 To run the app:
@@ -7,54 +12,61 @@ To run the app:
 
 app = Flask(__name__)
 
-stores = [
-    {
-        "name": "My Store",
-        "items": [
-            {
-                "name": "Chair",
-                "price": 100
-            }
-        ]
-    }
-]
 
 @app.get("/store")
 def get_stores():
-    return {"stores": stores}
+    return {"stores": list(stores.values())}
 
 @app.post("/store")
 def create_store():
     """
     Endpoint to create a new store without items.
     """
-    request_data = request.get_json()
+    store_data = request.get_json()
+    store_id = uuid.uuid4().hex
     new_store = {
-        "name": request_data["name"],
-        "items": []
+        "id": store_id,
+        **store_data,
     }
-    stores.append(new_store)
+    stores[store_id] = new_store
     return new_store, 201
 
-@app.post("/store/<string:store_name>/item")
-def create_item(store_name):
-    request_data = request.get_json()
-    for store in stores:
-        if store["name"] == store_name:
-            new_item = {
-                "name": request_data["name"],
-                "amount": request_data["amount"]
-            }
-            store["items"].append(new_item)
-            return new_item, 201
-    return {"message": f"Store {store_name} was not found"}, 404
+@app.post("/item")
+def create_item():
+    item_data = request.get_json()
+    # Validate parameters in the request body
+    paramets = ["price", "store_id", "name"]
+    for p in paramets:
+        if p not in item_data:
+            return abort(404, message=f"Please provide this parameter {p}")
+    # Validate store already exists
+    if item_data["store_id"] not in stores.keys():
+        return abort(404, message="Store not found")
+    item_id = uuid.uuid4().hex
+    item = {
+        **item_data,
+        "id": item_id,
+    }
+    items[item_id] = item
+    return item, 201
 
-@app.get("/store/<string:store_name>")
-def get_store(store_name):
+@app.get("/item")
+def get_all_items():
+    return {"items": list(items.values())}
+
+@app.get("/store/<string:store_id>")
+def get_store(store_id):
     """
     Pull specific store and its items.
     """
-    for store in stores:
-        if store["name"] == store_name:
-            return {"store": store}, 200
-    return {"message": f"Store not found"}, 404
+    try:
+        return stores[store_id], 200
+    except KeyError:
+        abort(404, message="Store not found.")
+    
+@app.get("/item/<string:item_id>")
+def get_item(item_id):
+    try:
+        return items[item_id], 200
+    except KeyError:
+        abort(404, message="Item not found.")
