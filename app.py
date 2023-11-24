@@ -34,8 +34,14 @@ def create_store():
 @app.post("/item")
 def create_item():
     item_data = request.get_json()
+    # Validate parameters in the request body
+    paramets = ["price", "store_id", "name"]
+    for p in paramets:
+        if p not in item_data:
+            return abort(404, message=f"Please provide this parameter {p}")
+    # Validate store already exists
     if item_data["store_id"] not in stores.keys():
-        return abort(404, message="Store not found.")
+        return abort(404, message="Store not found")
     item_id = uuid.uuid4().hex
     item = {
         **item_data,
